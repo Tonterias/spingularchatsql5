@@ -11,6 +11,18 @@
     <property name="floatType" value="float" dbms="mysql, oracle, mssql, mariadb"/>
 
     <include file="config/liquibase/changelog/00000000000000_initial_schema.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20190607102323_added_entity_ChatUser.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20190607102324_added_entity_ChatRoom.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20190607102325_added_entity_ChatRoomAllowedUser.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20190607102326_added_entity_ChatMessage.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20190607102327_added_entity_OffensiveMessage.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20190607102328_added_entity_ChatNotification.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
+    <include file="config/liquibase/changelog/20190607102323_added_entity_constraints_ChatUser.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20190607102324_added_entity_constraints_ChatRoom.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20190607102325_added_entity_constraints_ChatRoomAllowedUser.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20190607102326_added_entity_constraints_ChatMessage.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20190607102327_added_entity_constraints_OffensiveMessage.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20190607102328_added_entity_constraints_ChatNotification.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
 </databaseChangeLog>
