@@ -4,12 +4,15 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { JhiEventManager, JhiParseLinks, JhiAlertService } from 'ng-jhipster';
+import { ITEMS_PER_PAGE } from 'app/shared';
 
 import { IChatRoom } from 'app/shared/model/chat-room.model';
 import { AccountService } from 'app/core';
 
-import { ITEMS_PER_PAGE } from 'app/shared';
 import { ChatRoomService } from './chat-room.service';
+
+import { IChatUser } from 'app/shared/model/chat-user.model';
+import { ChatUserService } from 'app/entities/chat-user';
 
 @Component({
   selector: 'jhi-chat-room',
@@ -18,6 +21,11 @@ import { ChatRoomService } from './chat-room.service';
 export class ChatRoomComponent implements OnInit, OnDestroy {
   currentAccount: any;
   chatRooms: IChatRoom[];
+  chatusers: IChatUser[];
+  chatuser: IChatUser;
+
+  currentSearch: string;
+
   error: any;
   success: any;
   eventSubscriber: Subscription;
@@ -29,9 +37,15 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   predicate: any;
   previousPage: any;
   reverse: any;
+  owner: any;
+  isAdmin: boolean;
+
+  arrayAux = [];
+  arrayIds = [];
 
   constructor(
     protected chatRoomService: ChatRoomService,
+    protected chatUserService: ChatUserService,
     protected parseLinks: JhiParseLinks,
     protected jhiAlertService: JhiAlertService,
     protected accountService: AccountService,
@@ -49,6 +63,38 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   }
 
   loadAll() {
+    if (this.currentSearch) {
+      const query = {
+        page: this.page - 1,
+        size: this.itemsPerPage,
+        sort: this.sort()
+      };
+      query['roomDescription.contains'] = this.currentSearch;
+      query['queryParams'] = 1;
+      this.chatRoomService.query(query).subscribe(
+        (res: HttpResponse<IChatRoom[]>) => {
+          this.chatRooms = res.body;
+          //                  console.log('CONSOLOG: M:loadAll & O: this.chatRooms : ', this.chatRooms);
+          const query2 = {
+            page: this.page - 1,
+            size: this.itemsPerPage,
+            sort: this.sort()
+          };
+          query2['roomName.contains'] = this.currentSearch;
+          query2['queryParams'] = 1;
+          this.chatRoomService.query(query2).subscribe(
+            (res2: HttpResponse<IChatRoom[]>) => {
+              //                              console.log('CONSOLOG: M:loadAll & O: res2.body : ', res2.body);
+              this.chatRooms = this.filterArray(this.chatRooms.concat(res2.body));
+              //                              console.log('CONSOLOG: M:loadAll & O: this.chatRooms : ', this.chatRooms);
+            },
+            (res2: HttpErrorResponse) => this.onError(res2.message)
+          );
+        },
+        (res: HttpErrorResponse) => this.onError(res.message)
+      );
+      return;
+    }
     this.chatRoomService
       .query({
         page: this.page - 1,
@@ -59,6 +105,39 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
         (res: HttpResponse<IChatRoom[]>) => this.paginateChatRooms(res.body, res.headers),
         (res: HttpErrorResponse) => this.onError(res.message)
       );
+  }
+
+  private filterArray(chatRooms) {
+    this.arrayAux = [];
+    this.arrayIds = [];
+    chatRooms.map(x => {
+      if (this.arrayIds.length >= 1 && this.arrayIds.includes(x.id) === false) {
+        this.arrayAux.push(x);
+        this.arrayIds.push(x.id);
+      } else if (this.arrayIds.length === 0) {
+        this.arrayAux.push(x);
+        this.arrayIds.push(x.id);
+      }
+    });
+    //              console.log('CONSOLOG: M:filterInterests & O: this.follows : ', this.arrayIds, this.arrayAux);
+    return this.arrayAux;
+  }
+
+  search(query) {
+    if (!query) {
+      return this.clear();
+    }
+    this.page = 0;
+    this.currentSearch = query;
+    this.router.navigate([
+      '/chat-room',
+      {
+        search: this.currentSearch,
+        page: this.page,
+        sort: this.predicate + ',' + (this.reverse ? 'asc' : 'desc')
+      }
+    ]);
+    this.loadAll();
   }
 
   loadPage(page: number) {
@@ -95,6 +174,18 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     this.loadAll();
     this.accountService.identity().then(account => {
       this.currentAccount = account;
+      this.owner = account.id;
+      this.isAdmin = this.accountService.hasAnyAuthority(['ROLE_ADMIN']);
+      const query = {};
+      query['id.equals'] = this.currentAccount.id;
+      //        console.log('CONSOLOG: M:ngOnInit & O: query : ', query);
+      this.chatUserService.query(query).subscribe(
+        (res: HttpResponse<IChatUser[]>) => {
+          this.chatuser = res.body[0];
+          //            console.log('CONSOLOG: M:ngOnInit & O: this.chatUser : ', this.chatuser);
+        },
+        (res: HttpErrorResponse) => this.onError(res.message)
+      );
     });
     this.registerChangeInChatRooms();
   }
@@ -117,6 +208,20 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
       result.push('id');
     }
     return result;
+  }
+
+  myChatRooms() {
+    const query = {};
+    if (this.currentAccount.id != null) {
+      query['chatUserId.equals'] = this.chatuser.id;
+      query['queryParams'] = 1;
+    }
+    this.chatRoomService
+      .query(query)
+      .subscribe(
+        (res: HttpResponse<IChatRoom[]>) => this.paginateChatRooms(res.body, res.headers),
+        (res: HttpErrorResponse) => this.onError(res.message)
+      );
   }
 
   protected paginateChatRooms(data: IChatRoom[], headers: HttpHeaders) {

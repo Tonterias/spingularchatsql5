@@ -1,6 +1,15 @@
 <div class="row">
     <div class="col-md-3">
-                <div *ngFor="let chatRoom of chatRooms ;trackBy: trackId">
+    	<button id="jh-create-entity" class="btn btn-primary float-right jh-create-entity create-community" [routerLink]="['/chat-room/new']">
+		    <fa-icon [icon]="'plus'"></fa-icon> Add
+		</button>
+		<button id="jh-create-entity" class="btn btn-primary float-right jh-create-entity create-community" [routerLink]="['/chat-room']">
+		    <fa-icon [icon]="'plus'"></fa-icon> List
+		</button>
+		<button id="jh-create-entity" class="btn btn-primary float-right jh-create-entity create-community" [routerLink]="['/chat-room']">
+		    <fa-icon [icon]="'plus'"></fa-icon> Search
+		</button>
+        <div *ngFor="let chatRoom of chatRooms ;trackBy: trackId">
             <!-- <span jhiTranslate="spingularchatsqlApp.chatRoom.detail.title">Chat Room</span> {{chatRoom.id}} -->
             <jhi-alert-error></jhi-alert-error>
             <dl class="row-md jh-entity-details">

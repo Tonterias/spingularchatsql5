@@ -4,7 +4,9 @@
       "home": {
         "title": "Chat Rooms",
         "createLabel": "Create a new Chat Room",
-        "createOrEditLabel": "Create or edit a Chat Room"
+        "myLabel": "My Chat Rooms",
+        "createOrEditLabel": "Create or edit a Chat Room",
+        "search": "Search for a Chat Room"
       },
       "created": "A new Chat Room is created with identifier {{ param }}",
       "updated": "A Chat Room is updated with identifier {{ param }}",

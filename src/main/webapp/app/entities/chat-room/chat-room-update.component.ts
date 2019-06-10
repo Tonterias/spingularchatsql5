@@ -12,6 +12,8 @@ import { ChatRoomService } from './chat-room.service';
 import { IChatUser } from 'app/shared/model/chat-user.model';
 import { ChatUserService } from 'app/entities/chat-user';
 
+import { AccountService } from 'app/core';
+
 @Component({
   selector: 'jhi-chat-room-update',
   templateUrl: './chat-room-update.component.html'
@@ -21,6 +23,10 @@ export class ChatRoomUpdateComponent implements OnInit {
   isSaving: boolean;
 
   chatusers: IChatUser[];
+  chatuser: IChatUser;
+
+  account: any;
+  creationDate: string;
 
   editForm = this.fb.group({
     id: [],
@@ -35,12 +41,26 @@ export class ChatRoomUpdateComponent implements OnInit {
     protected jhiAlertService: JhiAlertService,
     protected chatRoomService: ChatRoomService,
     protected chatUserService: ChatUserService,
+    protected accountService: AccountService,
     protected activatedRoute: ActivatedRoute,
     private fb: FormBuilder
   ) {}
 
   ngOnInit() {
     this.isSaving = false;
+    this.accountService.identity().then(account => {
+      this.account = account;
+      const query = {};
+      query['id.equals'] = this.account.id;
+      console.log('CONSOLOG: M:ngOnInit & O: query : ', query);
+      this.chatUserService.query(query).subscribe(
+        (res: HttpResponse<IChatUser[]>) => {
+          this.chatuser = res.body[0];
+          //            console.log('CONSOLOG: M:ngOnInit & O: this.chatUser : ', this.chatuser);
+        },
+        (res: HttpErrorResponse) => this.onError(res.message)
+      );
+    });
     this.activatedRoute.data.subscribe(({ chatRoom }) => {
       this.updateForm(chatRoom);
       this.chatRoom = chatRoom;
@@ -72,9 +92,10 @@ export class ChatRoomUpdateComponent implements OnInit {
   save() {
     this.isSaving = true;
     const chatRoom = this.createFromForm();
-    if (chatRoom.id !== undefined) {
+    if (this.chatRoom.id !== undefined) {
       this.subscribeToSaveResponse(this.chatRoomService.update(chatRoom));
     } else {
+      chatRoom.chatUserId = this.chatuser.id;
       this.subscribeToSaveResponse(this.chatRoomService.create(chatRoom));
     }
   }

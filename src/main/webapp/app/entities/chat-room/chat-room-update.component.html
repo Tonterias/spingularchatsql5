@@ -64,14 +64,15 @@
                     <input type="checkbox" class="form-control" name="privateRoom" id="field_privateRoom"
                            formControlName="privateRoom"/>
                 </div>
-
+<!-- 
                 <div class="form-group">
                     <label class="form-control-label" jhiTranslate="spingularchatsql5App.chatRoom.chatUser" for="field_chatUser">Chat User</label>
                     <select class="form-control" id="field_chatUser" name="chatUser" formControlName="chatUserId">
                         <option [ngValue]="null"></option>
                         <option [ngValue]="chatUserOption.id" *ngFor="let chatUserOption of chatusers; trackBy: trackChatUserById">{{chatUserOption.id}}</option>
                     </select>
-                </div>
+                    <input type="text" class="form-control" id="id" formControlName="id" [(ngModel)]="chatuser.id" />
+                </div> -->
             </div>
             <div>
                 <button type="button" id="cancel-save" class="btn btn-secondary"  (click)="previousState()">
