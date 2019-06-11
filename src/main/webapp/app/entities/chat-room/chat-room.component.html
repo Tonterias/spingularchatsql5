@@ -69,6 +69,12 @@
                 </td>
                 <td class="text-right">
                     <div class="btn-group">
+	                    <button type="submit"
+                                [routerLink]="['/chat-room', chatRoom.id, 'view' ]"
+                                class="btn btn-info btn-sm">
+                            <fa-icon [icon]="'eye'"></fa-icon>
+                            <span class="d-none d-md-inline" jhiTranslate="spingularchatsql5App.chatRoom.participants">Participants</span>
+                        </button>
                         <button type="submit"
                                 [routerLink]="['/chat-room', chatRoom.id, 'view' ]"
                                 class="btn btn-info btn-sm">

@@ -21,6 +21,7 @@
       "roomName": "Room Name",
       "roomDescription": "Room Description",
       "privateRoom": "Private Room",
+      "participants": "Participantes",
       "chatMessage": "Chat Message",
       "chatRoomAllowedUser": "Chat Room Allowed User",
       "chatNotification": "Chat Notification",

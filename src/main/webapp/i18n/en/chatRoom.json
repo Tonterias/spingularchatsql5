@@ -20,6 +20,7 @@
       "creationDate": "Creation Date",
       "roomName": "Room Name",
       "roomDescription": "Room Description",
+      "participants": "Participants",
       "privateRoom": "Private Room",
       "chatMessage": "Chat Message",
       "chatRoomAllowedUser": "Chat Room Allowed User",
