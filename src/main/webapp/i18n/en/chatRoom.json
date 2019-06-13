@@ -25,6 +25,10 @@
       "chatMessage": "Chat Message",
       "chatRoomAllowedUser": "Chat Room Allowed User",
       "chatNotification": "Chat Notification",
+      "join": "Join",
+      "leave": "Leave",
+      "ban": "Ban User",
+      "allow": "Allow User",
       "chatUser": "Chat User"
     }
   }

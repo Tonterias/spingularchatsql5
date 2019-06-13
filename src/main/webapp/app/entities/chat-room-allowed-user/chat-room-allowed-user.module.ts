@@ -10,6 +10,7 @@ import {
   ChatRoomAllowedUserUpdateComponent,
   ChatRoomAllowedUserDeletePopupComponent,
   ChatRoomAllowedUserDeleteDialogComponent,
+  ParticipantsComponent,
   chatRoomAllowedUserRoute,
   chatRoomAllowedUserPopupRoute
 } from './';
@@ -23,13 +24,15 @@ const ENTITY_STATES = [...chatRoomAllowedUserRoute, ...chatRoomAllowedUserPopupR
     ChatRoomAllowedUserDetailComponent,
     ChatRoomAllowedUserUpdateComponent,
     ChatRoomAllowedUserDeleteDialogComponent,
-    ChatRoomAllowedUserDeletePopupComponent
+    ChatRoomAllowedUserDeletePopupComponent,
+    ParticipantsComponent
   ],
   entryComponents: [
     ChatRoomAllowedUserComponent,
     ChatRoomAllowedUserUpdateComponent,
     ChatRoomAllowedUserDeleteDialogComponent,
-    ChatRoomAllowedUserDeletePopupComponent
+    ChatRoomAllowedUserDeletePopupComponent,
+    ParticipantsComponent
   ],
   providers: [{ provide: JhiLanguageService, useClass: JhiLanguageService }],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

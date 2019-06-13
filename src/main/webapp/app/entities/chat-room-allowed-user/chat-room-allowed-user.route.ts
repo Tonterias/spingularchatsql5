@@ -12,6 +12,7 @@ import { ChatRoomAllowedUserDetailComponent } from './chat-room-allowed-user-det
 import { ChatRoomAllowedUserUpdateComponent } from './chat-room-allowed-user-update.component';
 import { ChatRoomAllowedUserDeletePopupComponent } from './chat-room-allowed-user-delete-dialog.component';
 import { IChatRoomAllowedUser } from 'app/shared/model/chat-room-allowed-user.model';
+import { ParticipantsComponent } from './participants.component';
 
 @Injectable({ providedIn: 'root' })
 export class ChatRoomAllowedUserResolve implements Resolve<IChatRoomAllowedUser> {
@@ -40,6 +41,19 @@ export const chatRoomAllowedUserRoute: Routes = [
       authorities: ['ROLE_USER'],
       defaultSort: 'id,asc',
       pageTitle: 'spingularchatsql5App.chatRoomAllowedUser.home.title'
+    },
+    canActivate: [UserRouteAccessService]
+  },
+  {
+    path: 'participants',
+    component: ParticipantsComponent,
+    resolve: {
+      pagingParams: JhiResolvePagingParams
+    },
+    data: {
+      authorities: ['ROLE_USER'],
+      defaultSort: 'id,asc',
+      pageTitle: 'spingularchatsql5App.chatRoomAllowedUser.home.participants'
     },
     canActivate: [UserRouteAccessService]
   },

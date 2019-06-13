@@ -69,25 +69,22 @@
                 </td>
                 <td class="text-right">
                     <div class="btn-group">
-	                    <button type="submit"
-                                [routerLink]="['/chat-room', chatRoom.id, 'view' ]"
-                                class="btn btn-info btn-sm">
-                            <fa-icon [icon]="'eye'"></fa-icon>
-                            <span class="d-none d-md-inline" jhiTranslate="spingularchatsql5App.chatRoom.participants">Participants</span>
-                        </button>
+						<a [routerLink]="['/chat-room-allowed-user/participants']" [queryParams]="{ 'chatRoomIdEquals': chatRoom.id }" class="list-group-item list-group-item-action justify-content-between">
+							<span><i class="icon-notebook g-pos-rel g-top-1 g-mr-8"></i> Participants</span>
+						</a>
                         <button type="submit"
                                 [routerLink]="['/chat-room', chatRoom.id, 'view' ]"
                                 class="btn btn-info btn-sm">
                             <fa-icon [icon]="'eye'"></fa-icon>
                             <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
                         </button>
-                        <button *ngIf="owner === chatRoom.userId || isAdmin == true" type="submit"
+                        <button *ngIf="owner === chatRoom.chatUserId || isAdmin == true" type="submit"
                                 [routerLink]="['/chat-room', chatRoom.id, 'edit']"
                                 class="btn btn-primary btn-sm">
                             <fa-icon [icon]="'pencil-alt'"></fa-icon>
                             <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
                         </button>
-                        <button *ngIf="owner === chatRoom.userId || isAdmin == true" type="submit"
+                        <button *ngIf="owner === chatRoom.chatUserId || isAdmin == true" type="submit"
                                 [routerLink]="['/', 'chat-room', { outlets: { popup: chatRoom.id + '/delete'} }]"
                                 replaceUrl="true"
                                 queryParamsHandling="merge"

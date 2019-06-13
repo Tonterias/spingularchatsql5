@@ -20,11 +20,15 @@
       "creationDate": "Creation Date",
       "roomName": "Room Name",
       "roomDescription": "Room Description",
-      "privateRoom": "Private Room",
       "participants": "Participantes",
+      "privateRoom": "Private Room",
       "chatMessage": "Chat Message",
       "chatRoomAllowedUser": "Chat Room Allowed User",
       "chatNotification": "Chat Notification",
+      "join": "Unirse",
+      "leave": "Abandonar",
+      "ban": "Expulsar Usuario",
+      "allow": "Admitir Usuario",
       "chatUser": "Chat User"
     }
   }

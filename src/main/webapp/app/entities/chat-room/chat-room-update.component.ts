@@ -52,7 +52,7 @@ export class ChatRoomUpdateComponent implements OnInit {
       this.account = account;
       const query = {};
       query['id.equals'] = this.account.id;
-      console.log('CONSOLOG: M:ngOnInit & O: query : ', query);
+      //      console.log('CONSOLOG: M:ngOnInit & O: query : ', query);
       this.chatUserService.query(query).subscribe(
         (res: HttpResponse<IChatUser[]>) => {
           this.chatuser = res.body[0];
@@ -75,14 +75,24 @@ export class ChatRoomUpdateComponent implements OnInit {
   }
 
   updateForm(chatRoom: IChatRoom) {
+    const date = moment(moment().format('YYYY-MM-DDTHH:mm'), 'YYYY-MM-DDTHH:mm');
     this.editForm.patchValue({
       id: chatRoom.id,
-      creationDate: chatRoom.creationDate != null ? chatRoom.creationDate.format(DATE_TIME_FORMAT) : null,
+      //      creationDate: chatRoom.creationDate != null ? chatRoom.creationDate.format(DATE_TIME_FORMAT) : null,
+      creationDate:
+        chatRoom.creationDate != null
+          ? chatRoom.creationDate.format(DATE_TIME_FORMAT)
+          : JSON.stringify(date)
+              .split(':00.000Z')
+              .join('')
+              .split('"')
+              .join(''),
       roomName: chatRoom.roomName,
       roomDescription: chatRoom.roomDescription,
       privateRoom: chatRoom.privateRoom,
       chatUserId: chatRoom.chatUserId
     });
+    //    console.log(JSON.stringify(date).split(':00.000Z').join('').split('"').join('') , '--------------+++++', chatRoom.creationDate);
   }
 
   previousState() {
@@ -105,7 +115,9 @@ export class ChatRoomUpdateComponent implements OnInit {
       ...new ChatRoom(),
       id: this.editForm.get(['id']).value,
       creationDate:
-        this.editForm.get(['creationDate']).value != null ? moment(this.editForm.get(['creationDate']).value, DATE_TIME_FORMAT) : undefined,
+        this.editForm.get(['creationDate']).value != null
+          ? moment(this.editForm.get(['creationDate']).value, DATE_TIME_FORMAT)
+          : moment(moment().format(DATE_TIME_FORMAT)),
       roomName: this.editForm.get(['roomName']).value,
       roomDescription: this.editForm.get(['roomDescription']).value,
       privateRoom: this.editForm.get(['privateRoom']).value,

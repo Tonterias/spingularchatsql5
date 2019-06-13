@@ -6,13 +6,16 @@ import { filter, map } from 'rxjs/operators';
 import { JhiEventManager, JhiParseLinks, JhiAlertService } from 'ng-jhipster';
 import { ITEMS_PER_PAGE } from 'app/shared';
 
-import { IChatRoom } from 'app/shared/model/chat-room.model';
 import { AccountService } from 'app/core';
 
+import { IChatRoom } from 'app/shared/model/chat-room.model';
 import { ChatRoomService } from './chat-room.service';
 
 import { IChatUser } from 'app/shared/model/chat-user.model';
 import { ChatUserService } from 'app/entities/chat-user';
+
+import { IChatRoomAllowedUser } from 'app/shared/model/chat-room-allowed-user.model';
+import { ChatRoomAllowedUserService } from 'app/entities/chat-room-allowed-user/chat-room-allowed-user.service';
 
 @Component({
   selector: 'jhi-chat-room',
@@ -21,8 +24,9 @@ import { ChatUserService } from 'app/entities/chat-user';
 export class ChatRoomComponent implements OnInit, OnDestroy {
   currentAccount: any;
   chatRooms: IChatRoom[];
-  chatusers: IChatUser[];
-  chatuser: IChatUser;
+  chatUsers: IChatUser[];
+  chatUser: IChatUser;
+  chatRoomAllowedUsers: IChatRoomAllowedUser[];
 
   currentSearch: string;
 
@@ -46,6 +50,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   constructor(
     protected chatRoomService: ChatRoomService,
     protected chatUserService: ChatUserService,
+    protected chatRoomAllowedUserService: ChatRoomAllowedUserService,
     protected parseLinks: JhiParseLinks,
     protected jhiAlertService: JhiAlertService,
     protected accountService: AccountService,
@@ -74,7 +79,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
       this.chatRoomService.query(query).subscribe(
         (res: HttpResponse<IChatRoom[]>) => {
           this.chatRooms = res.body;
-          //                  console.log('CONSOLOG: M:loadAll & O: this.chatRooms : ', this.chatRooms);
+          console.log('CONSOLOG: M:loadAll & O: this.chatRooms : ', this.chatRooms);
           const query2 = {
             page: this.page - 1,
             size: this.itemsPerPage,
@@ -84,9 +89,9 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
           query2['queryParams'] = 1;
           this.chatRoomService.query(query2).subscribe(
             (res2: HttpResponse<IChatRoom[]>) => {
-              //                              console.log('CONSOLOG: M:loadAll & O: res2.body : ', res2.body);
+              //            console.log('CONSOLOG: M:loadAll & O: res2.body : ', res2.body);
               this.chatRooms = this.filterArray(this.chatRooms.concat(res2.body));
-              //                              console.log('CONSOLOG: M:loadAll & O: this.chatRooms : ', this.chatRooms);
+              //            console.log('CONSOLOG: M:loadAll & O: this.chatRooms : ', this.chatRooms);
             },
             (res2: HttpErrorResponse) => this.onError(res2.message)
           );
@@ -181,8 +186,9 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
       //        console.log('CONSOLOG: M:ngOnInit & O: query : ', query);
       this.chatUserService.query(query).subscribe(
         (res: HttpResponse<IChatUser[]>) => {
-          this.chatuser = res.body[0];
-          //            console.log('CONSOLOG: M:ngOnInit & O: this.chatUser : ', this.chatuser);
+          this.chatUser = res.body[0];
+          //            console.log('CONSOLOG: M:ngOnInit & O: this.chatUser : ', this.chatUser);
+          //        this.myChatRooms();
         },
         (res: HttpErrorResponse) => this.onError(res.message)
       );
@@ -213,21 +219,56 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   myChatRooms() {
     const query = {};
     if (this.currentAccount.id != null) {
-      query['chatUserId.equals'] = this.chatuser.id;
+      query['chatUserId.equals'] = this.chatUser.id;
       query['queryParams'] = 1;
     }
-    this.chatRoomService
-      .query(query)
-      .subscribe(
-        (res: HttpResponse<IChatRoom[]>) => this.paginateChatRooms(res.body, res.headers),
-        (res: HttpErrorResponse) => this.onError(res.message)
-      );
+    this.chatRoomService.query(query).subscribe(
+      //        (res: HttpResponse<IChatRoom[]>) => this.paginateChatRooms(res.body, res.headers),
+      (res: HttpResponse<IChatRoom[]>) => {
+        this.chatRooms = res.body;
+        //              console.log('CONSOLOG: M:myChatRooms & O: query : ', query);
+        //              console.log('CONSOLOG: M:myChatRooms & O: this.chatRooms : ', this.chatRooms);
+        const query2 = {};
+        query2['chatUserId.equals'] = this.chatUser.id;
+        query2['bannedUser.equals'] = 'false';
+        query2['queryParams'] = 1;
+        this.chatRoomAllowedUserService.query(query2).subscribe(
+          (res2: HttpResponse<IChatRoomAllowedUser[]>) => {
+            //                        console.log('CONSOLOG: M:myChatRooms & O: query2 : ', query2);
+            this.chatRoomAllowedUsers = res2.body;
+            //                        console.log('CONSOLOG: M:myChatRooms & O: chatRoomAllowedUsers : ', this.chatRoomAllowedUsers);
+            if (this.chatRoomAllowedUsers != null) {
+              const arrayChatRoomAllowedUsers = [];
+              this.chatRoomAllowedUsers.forEach(chatRoomAllowedUser => {
+                //                                console.log('CONSOLOG: M:myChatRooms & O: arrayChatRoomAllowedUsers : ', arrayChatRoomAllowedUsers);
+                arrayChatRoomAllowedUsers.push(chatRoomAllowedUser.chatRoomId);
+              });
+              const query3 = {};
+              query3['id.in'] = arrayChatRoomAllowedUsers;
+              this.chatRoomService.query(query3).subscribe(
+                (res3: HttpResponse<IChatRoom[]>) => {
+                  //                                        this.calbums = res.body;
+                  this.chatRooms = this.filterArray(this.chatRooms.concat(res3.body));
+                  //                                        console.log('CONSOLOG: M:myChatRoomsEND & O: this.chatRooms : ', this.chatRooms);
+                },
+                (res3: HttpErrorResponse) => this.onError(res3.message)
+              );
+            }
+            //                        this.chatRooms = this.filterArray(this.chatRooms.concat(res2.body));
+            //                        console.log('CONSOLOG: M:myChatRoomsPOST & O: this.chatRooms : ', this.chatRooms);
+          },
+          (res2: HttpErrorResponse) => this.onError(res2.message)
+        );
+      },
+      (res: HttpErrorResponse) => this.onError(res.message)
+    );
   }
 
   protected paginateChatRooms(data: IChatRoom[], headers: HttpHeaders) {
     this.links = this.parseLinks.parse(headers.get('link'));
     this.totalItems = parseInt(headers.get('X-Total-Count'), 10);
     this.chatRooms = data;
+    //    console.log('CONSOLOG: M:paginateChatRooms & O: this.chatRooms : ', this.chatRooms);
   }
 
   protected onError(errorMessage: string) {
